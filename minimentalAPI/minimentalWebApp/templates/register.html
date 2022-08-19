@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+<html dir="rtl" lang="">
+<head>
+    <title>registration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
+          crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'registration/style.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-growl/1.0.0/jquery.bootstrap-growl.js"
+            integrity="sha512-4fpPq5LCcSAofCKmaM58RSbjpVRUqjx8nKAaBQVFay4MRo7FLafbt6bUNUfUbTZcSMzRNxZuVj3shwHA6ZeiOQ=="
+            crossorigin="anonymous"></script>
+</head>
+
+<body>
+{% block content %}
+<div class="registration-page">
+    <div class="form">
+        <form method="POST" class="form-group" style="text-align: right" dir="rtl">
+            <h1 class="translate" id="adduser">Add user</h1>
+            {% csrf_token %}
+            {{form|crispy}}
+            {{ourform|crispy}}
+            <button id="register_btn" type="button" class="btn btn-success"><h class="translate" id="register">Register</h></button>
+        </form>
+    </div>
+</div>
+<script type="text/javascript" src="{% static 'scripts.js' %}"></script>
+<link rel="stylesheet" type='text/css' href="{% static 'registration/style.css' %}">
+{% endblock content %}
+{% block footer_scripts %}
+{% endblock footer_scripts %}
+</body>
+</html>

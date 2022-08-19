@@ -1,0 +1,352 @@
+<!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">-->
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% load static %}
+<html dir="rtl" lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}
+        {{patient_details.first_name}} {{patient_details.last_name}} | Minimental
+        {% endblock %}
+    </title>
+</head>
+
+<body>
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="card text-dark bg-light m-0 p-0 mt-3">
+            <div class="form-container">
+                <form method="POST" action="/patient_detail" id="new_test_form">
+                    <div class="is_in_hospital">
+                        <label for="is_in_hospital"><h class="transtale" id="testat">Test at hospital: </h></label>
+                        {% csrf_token %}
+                         <input type="hidden" id="email" name="email" value={{patient_details.email}}>
+                         <input type="checkbox" id="is_in_hospital" name="is_in_hospital"><br>
+                         <input type="date" id="date" name="date"><br>
+                        <button id="make_new_test_btn" type="button" class="btn btn-blue"><h class="translate" id="scheduletest"> Schedule next test</h></button>
+                    </div>
+                    <div class="card-header"><h class="translate" id="perinfo">Personal information</h></div>
+                </form>
+            </div>
+
+            <div class="card-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col-lg">
+                                    <p><span><h class="translate" id="name">  Name:  </h></span> {{patient_details.first_name}}
+                                        {{patient_details.last_name}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg">
+                                    <p><span><h class="translate" id="dob">  Date of birth:  </h></span> {{patient_details.date_of_birth}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg">
+                                    <p><span><h class="translate" id="country">  Country:  </h></span> {{patient_details.country}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg">
+                                    <p><span><h class="translate" id="city">  City:  </h></span> {{patient_details.city}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg">
+                                    <p><span><h class="translate" id="floor">  Floor:  </h></span> {{patient_details.floor}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg">
+                                    <p><span><h class="translate" id="doc">  Doctor:  </h></span> {{patient_details.doctor}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg">
+                                    <p><span><h class="translate" id="ntd">  Next test:  </h></span> {{next_test_date}}</p>
+                                </div>
+                                <div class="col-lg">
+                                    <p><span><h class="translate" id="hasprem">  Has permission:  </h></span> {{has_permission}} </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <img style="float: left" width="150rem" src="{% static "personal-information.png" %}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+    <div class="row">
+        <div class="card text-dark bg-light m-0 p-0 mt-3">
+            <div class="card-header"><h class="translate" id="tests">  Tests  </h>
+            </div>
+            <div class="card-body">
+                <div class="container">
+                    <div class="row">
+                            {% if patient_tests != None %}
+                                <div class="col">
+                                {% for key,test in patient_tests.items %}
+                                    <input type="hidden" id="test_num_{{key}}" name="test_num" value={{key}}>
+                                    {% if key != "value" %}
+                                        <div class="row">
+                                            <div class="col-lg">
+                                                <p style="font-size:30px; color:#00008B; align-items:center;
+                                                                    justify-content: center; display: flex;">
+                                                    <span> <b> {{key}}
+                                                    </b> </span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {% for x,val in test.items %}
+                                            {% if x != "TenthQuestion" and x != "userId" and x != "final_score" %}
+                                                {% if x != "userId" %}
+                                                    <div class="row">
+                                                        <div class="col-lg">
+                                                             <p><span>  {{x}} : </span>
+                                                                 {% if val.value != True and val.value != False %}
+                                                                    {% for v in val.value.items %}
+                                                                        <li>
+                                                                            {{v.0}} = {{v.1}}
+                                                                        </li>
+                                                                    {% endfor %}
+                                                                    {% if x == "FirstQuestion" %}
+                                                                        <ul>התמצאות בזמן {{val.score.0}} / 5
+                                                                            <form method="POST" action="/patient_detail" id="time_form">
+                                                                                <input type="number" id="quantity_{{key}}" name="quantity" min="0" max="5">
+                                                                                <button id="time_btn_{{key}}" type="button" class="btn btn-success" onclick="edit_btn(test_num_{{key}}, quantity_{{key}}, '{{x}}', 0)">
+                                                                                    ערוך</button>
+                                                                            </form>
+                                                                        </ul>
+                                                                        <ul>התמצאות במיקום {{val.score.1}} / 5
+                                                                            <form method="POST" action="/patient_detail" id="place_form">
+                                                                                <input type="number" id="quantity1_{{key}}" name="quantity" min="0" max="5">
+                                                                                    <button id="place_btn_{{key}}" type="button" class="btn btn-success" onclick="edit_btn(test_num_{{key}}, quantity1_{{key}}, '{{x}}', 0)">
+                                                                                  ערוך</button>
+                                                                            </form>
+                                                                        </ul>
+                                                                    {% elif x == "SecondQuestion" %}
+                                                                        <ul>{{val.score.0}} / 3
+                                                                        <form method="POST" action="/patient_detail" id="sec_form">
+                                                                                <input type="number" id="quantity2_{{key}}" name="quantity" min="0" max="3">
+                                                                                <button id="sec_btn_{{key}}" type="button" class="btn btn-success" onclick="edit_btn(test_num_{{key}}, quantity2_{{key}}, '{{x}}', 1)">
+                                                                                    ערוך</button>
+                                                                            </form>
+                                                                        </ul>
+                                                                    {% elif x == "MathQuestion" %}
+                                                                               <br> {{val.value}}
+                                                                        <ul>{{val.score.0}} / 5
+                                                                        <form method="POST" action="/patient_detail" id="thr_form">
+                                                                                <input type="number" id="quantity3_{{key}}" name="quantity" min="0" max="5">
+                                                                                <button id="thr_btn_{{key}}" type="button" class="btn btn-success" onclick="edit_btn(test_num_{{key}}, quantity3_{{key}}, '{{x}}', 0)">
+                                                                                    ערוך</button>
+                                                                            </form>
+                                                                        </ul>
+                                                                    {% elif x == "ForthQuestion" %}
+                                                                        <ul>{{val.score.0}} / 3
+                                                                        <form method="POST" action="/patient_detail" id="Forth_form">
+                                                                                <input type="number" id="quantity4_{{key}}" name="quantity" min="0" max="3">
+                                                                                <button id="Forth_btn_{{key}}" type="button" class="btn btn-success" onclick="edit_btn(test_num_{{key}}, quantity4_{{key}}, '{{x}}', 0)">
+                                                                                    ערוך</button>
+                                                                            </form>
+                                                                        </ul>
+                                                                    {% elif x == "FifthQuestion" %}
+                                                                        <ul>{{val.score.0}} / 2
+                                                                        <form method="POST" action="/patient_detail" id="Fifth_form">
+                                                                                <input type="number" id="quantity5_{{key}}" name="quantity" min="0" max="2">
+                                                                                <button id="Fifth_btn_{{key}}" type="button" class="btn btn-success" onclick="edit_btn(test_num_{{key}}, quantity5_{{key}}, '{{x}}', 0)">
+                                                                                    ערוך</button>
+                                                                            </form>
+                                                                        </ul>
+                                                                    {% elif x == "SixthQuestion" %}
+                                                                        <ul>{{val.score.0}} / 1
+                                                                        <form method="POST" action="/patient_detail" id="Sixth_form">
+                                                                                <input type="number" id="quantity6_{{key}}" name="quantity" min="0" max="1">
+                                                                                <button id="Sixth_btn_{{key}}" type="button" class="btn btn-success" onclick="edit_btn(test_num_{{key}}, quantity6_{{key}}, '{{x}}', 0)">
+                                                                                    ערוך</button>
+                                                                            </form>
+                                                                        </ul>
+                                                                    {% elif x == "NineQuestion" %}
+                                                                        <ul>{{val.score.0}} / 1
+                                                                        <form method="POST" action="/patient_detail" id="Nine_form">
+                                                                                <input type="number" id="quantity9_{{key}}" name="quantity" min="0" max="1">
+                                                                                <button id="Nine_btn_{{key}}" type="button" class="btn btn-success" onclick="edit_btn(test_num_{{key}}, quantity9_{{key}}, '{{x}}', 0)">
+                                                                                    ערוך</button>
+                                                                            </form>
+                                                                        </ul>
+                                                                    {% endif %}
+                                                                 {% elif val.value == False %}
+                                                                    {% if x == "SeventhQuestion" %}
+                                                                         <li class="translate" id="failed">The patient failed the question</li>
+                                                                         <ul>0 / 3
+                                                                         </ul>
+                                                                    {% else %}
+                                                                        <li class="translate" id="failed1">The patient failed the question</li>
+                                                                         <ul>0 / 1
+                                                                         </ul>
+                                                                    {% endif %}
+                                                                 {% elif val.value == True %}
+                                                                     {% if x == "SeventhQuestion" %}
+                                                                         <li class="translate" id="succ">The patient answered successfully</li>
+                                                                         <ul>3 / 3
+                                                                         </ul>
+                                                                    {% else %}
+                                                                        <li class="translate" id="succ1">The patient answered successfully</li>
+                                                                         <ul>1 / 1
+                                                                         </ul>
+                                                                    {% endif %}
+                                                                 {% endif %}
+                                                             </p>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            {% elif x == "TenthQuestion" %}
+                                                <div class="row">
+                                                    <div class="col-lg">
+                                                         <p><span>  {{x}}:<br><h class="translate" id="testbyhand">* You must check this question manually: </h></span>
+                                                             <ul>{{val.score.0}} / 1
+                                                                <form method="POST" action="/patient_detail" id="Tenth_form">
+                                                                                <input type="number" id="quantity10_{{key}}" name="quantity" min="0" max="1">
+                                                                                <button id="Tenth_btn_{{key}}" type="button" class="btn btn-success" onclick="edit_btn(test_num_{{key}}, quantity10_{{key}}, '{{x}}', 0)">
+                                                                                    ערוך</button>
+                                                                            </form>
+                                                            </ul>
+                                                            <img src= {{val.value}} width="50%" height="50%"></p>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class="row">
+                                                    <div class="col-lg">
+                                                       <ul><h class="translate" id="finalscore">Final score:  </h>{{val.value}}</ul>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="col">
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <div class="alert alert-warning" role="alert">
+                                                <i class="fas fa-exclamation-circle fa-lg"></i>
+                                              <h class="translate" id="notestyet">  Patient has not filled a Minimental test yet!  </h>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        <div class="col">
+                            <img style="float: left" width="150rem" src="{% static "questionnaire.png" %}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="card text-dark bg-light m-0 p-0 mt-3">
+            <div class="card-header"><h class="translate" id="pics">  Pictures added by the patient  </h>
+            </div>
+            <div class="card-body">
+                <div class="container">
+                    <div class="row">
+                            {% if patient_imeges != None %}
+                                <div class="col">
+                                {% for test,pics in patient_imeges.items %}
+                                    <div class="row">
+                                        <div class="col-lg">
+                                            <p style="font-size:30px; color:#00008B; align-items:center;
+                                                                justify-content: center; display: flex;">
+                                                <span> <b> {{ test }} </b> </span>
+                                            </p>
+                                            {% for key, pic in pics.items %}
+                                                <ul>
+                                                    <img src= {{pic}} class="thumbnail" width="25%" height="25%" />
+                                                </ul>
+                                            {% endfor %}
+                                        </div>
+
+                                    </div>
+                                {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="col">
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <div class="alert alert-warning" role="alert">
+                                                <i class="fas fa-exclamation-circle fa-lg"></i>
+                                                <h class="translate" id="nopics">  The patient did not take pictures  </h>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        <div class="col">
+                            <canvas id="myChart" width="400" height="400"></canvas>
+                                <script>
+                                const ctx = document.getElementById('myChart');
+                                const chart1 = new myChart(ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: ['מבחן 1', 'מבחן 2', 'מבחן 3', 'מבחן 4'],
+                                        datasets: [{
+                                            label: 'grade in tests latest at right',
+                                            data: [28, 26, 27, 25],
+                                            backgroundColor: [
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)'
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 99, 132, 1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)'
+                                            ],
+                                            borderWidth: 1
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+                                </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="{% static 'scripts.js' %}"></script>
+<link rel="stylesheet" type='text/css' href="{% static 'style.css' %}">
+{% endblock %}
+{% block footer_scripts %}
+{% endblock footer_scripts %}
+</body>
+</html>

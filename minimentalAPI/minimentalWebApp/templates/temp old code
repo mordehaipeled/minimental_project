@@ -1,0 +1,485 @@
+
+<script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const yLabels = {
+        6: 'Dyskinesia',
+        2: 'Off',
+        4: 'On',
+        8: '',
+    };
+
+    var tooltipSh = new Image()
+    tooltipSh.src = "{% static "medicine.png" %}"
+
+    // Init the chartJs
+    const myChart = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+            labels: [],
+            datasets: [{
+                type: 'line',
+                showLine: true,
+                fill: false,
+                borderColor: 'rgb(39,65,181)',
+                borderWidth: 1,
+                pointBorderWidth: 3,
+                pointHoverRadius: 8,
+                pointStyle: [],
+                radius:8,
+                pointBorderColor: [],
+                data: [],
+            }, {
+                pointStyle: tooltipSh,
+                hitRadius: 10,
+                data: []
+            },]
+        },
+        options: {
+            showAllTooltips: true,
+            responsive: true,
+            layout: {
+                padding: {
+                    left: 20,
+                    right: 30,
+                    bottom: 20,
+                    top: 20
+                }
+            },
+            tooltips: {
+                yAlign: 'bottom', //placing the tooltip on top
+                xAlign: 'center',
+                bodySpacing: 1,
+                bodyAlign: 'center',
+                caretPadding: -40,
+                caretSize: 20,
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        let indice = tooltipItem.index;
+                        if (tooltipItem.datasetIndex === 0) {
+                            return data.datasets[0].data[indice].x
+                        } else {
+                            return data.datasets[1].data[indice].x
+                        }
+                    },
+                    afterLabel: function (tooltipItem, data) {
+                        let indice = tooltipItem.index;
+                        if (tooltipItem.datasetIndex === 0) {
+                            return yLabels[data.datasets[0].data[indice].y]
+                        } else {
+                            return data.datasets[1].data[indice].id
+                        }
+                    }
+                }
+            },
+            legend: {
+                display: false
+            },
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    distribution: 'linear',
+                    time: {
+                        parser: "HH:mm",
+                        unit: 'hour',
+                        unitStepSize: 1,
+                        displayFormats: {
+                            'minute': 'HH:mm',
+                            'hour': 'HH:mm',
+                            min: '00:00',
+                            max: '23:59'
+                        },
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        suggestedMin: 0,
+                        suggestedMax: 10,
+                        callback: function (value) {
+                            return yLabels[value];
+                        }
+                    }
+                }]
+            },
+        }
+    });
+
+    setTimepickerOptions($('.row-time-data'))
+    // Getting data of med times and put it on graph
+    updateMedReports(true,{{medication_reports|safe}}, myChart);
+    // Setting the date picker date to today and preventing future dates
+    today = formatDate(true);
+    let date_picker = document.getElementById('filter_dates');
+    date_picker.value = today;
+    document.getElementById('filter_dates').setAttribute('max', today);
+    // Getting data of reports and put it on graph
+    filterDatesAndLabels(true, {{reports|safe}})
+    document.getElementById('filter_btn').addEventListener('click', filterDatesAndLabels.bind(null, false, {{reports|safe}}));
+    document.getElementById('filter_btn').addEventListener('click', updateMedReports.bind(null, false, {{medication_reports|safe}},myChart));
+
+</script>
+
+
+------------------------------------
+//handles the edit button for the time score
+$("#time_btn_tes").click(function () {
+    console.log("time btn")
+    let email = $('#email')[0].value
+    let score = $('#quantity')[0].value
+    let question = "FirstQuestion"
+    let place = 0
+    let test_name = $('#test_num')[0].value
+    const token = $('input[name="csrfmiddlewaretoken"]').attr('value')
+        $.post({
+            url: "edit_score",
+            data: {"email": email, "score": score, "question": question, "place": place, "test": test_name},
+            headers: {
+            "X-CSRFToken": token
+            },
+            success: function (result) {
+                if (result === "False") {  //If something went wrong
+                    //GrowlCall("עדכון לא הצליח",'danger')
+                    console.log("no")
+                } else {
+                    console.log("yes")
+                }
+            }
+        })
+    console.log(test_name)
+})
+//handles the edit button for the location score
+$("#place_btn").click(function () {
+    console.log("place btn 1")
+    let email = $('#email')[0].value
+    let score = $('#quantity1')[0].value
+    let question = "FirstQuestion"
+    let place = 1
+    let test_name = $('#test_num')[0].value
+    const token = $('input[name="csrfmiddlewaretoken"]').attr('value')
+        $.post({
+            url: "edit_score",
+            data: {"email": email, "score": score, "question": question, "place": place, "test": test_name},
+            headers: {
+            "X-CSRFToken": token
+            },
+            success: function (result) {
+                if (result === "False") {  //If something went wrong
+                    //GrowlCall("עדכון לא הצליח",'danger')
+                    console.log("no")
+                } else {
+                    console.log("yes")
+                }
+            }
+        })
+    console.log(score)
+})
+//handles the edit button for the sec q score
+$("#sec_btn").click(function () {
+    let email = $('#email')[0].value
+    let score = $('#quantity2')[0].value
+    let question = "SecondQuestion"
+    let place = 0
+    let test_name = $('#test_num')[0].value
+    const token = $('input[name="csrfmiddlewaretoken"]').attr('value')
+        $.post({
+            url: "edit_score",
+            data: {"email": email, "score": score, "question": question, "place": place, "test": test_name},
+            headers: {
+            "X-CSRFToken": token
+            },
+            success: function (result) {
+                if (result === "False") {  //If something went wrong
+                    //GrowlCall("עדכון לא הצליח",'danger')
+                    console.log("no")
+                } else {
+                    console.log("yes")
+                }
+            }
+        })
+    console.log(email)
+})
+//handles the edit button for the third q score
+$("#thr_btn").click(function () {
+    let email = $('#email')[0].value
+    let score = $('#quantity3')[0].value
+    let question = "MathQuestion"
+    let place = 0
+    let test_name = $('#test_num')[0].value
+    const token = $('input[name="csrfmiddlewaretoken"]').attr('value')
+        $.post({
+            url: "edit_score",
+            data: {"email": email, "score": score, "question": question, "place": place, "test": test_name},
+            headers: {
+            "X-CSRFToken": token
+            },
+            success: function (result) {
+                if (result === "False") {  //If something went wrong
+                    //GrowlCall("עדכון לא הצליח",'danger')
+                    console.log("no")
+                } else {
+                    console.log("yes")
+                }
+            }
+        })
+    console.log(email)
+})
+//handles the edit button for the Forth q score
+$("#Forth_btn").click(function () {
+    let email = $('#email')[0].value
+    let score = $('#quantity4')[0].value
+    let question = "ForthQuestion"
+    let place = 0
+    let test_name = $('#test_num')[0].value
+    const token = $('input[name="csrfmiddlewaretoken"]').attr('value')
+        $.post({
+            url: "edit_score",
+            data: {"email": email, "score": score, "question": question, "place": place, "test": test_name},
+            headers: {
+            "X-CSRFToken": token
+            },
+            success: function (result) {
+                if (result === "False") {  //If something went wrong
+                    //GrowlCall("עדכון לא הצליח",'danger')
+                    console.log("no")
+                } else {
+                    console.log("yes")
+                }
+            }
+        })
+    console.log(email)
+})
+//handles the edit button for the Fifth q score
+$("#Fifth_btn").click(function () {
+    let email = $('#email')[0].value
+    let score = $('#quantity5')[0].value
+    let question = "FifthQuestion"
+    let place = 0
+    let test_name = $('#test_num')[0].value
+    const token = $('input[name="csrfmiddlewaretoken"]').attr('value')
+        $.post({
+            url: "edit_score",
+            data: {"email": email, "score": score, "question": question, "place": place, "test": test_name},
+            headers: {
+            "X-CSRFToken": token
+            },
+            success: function (result) {
+                if (result === "False") {  //If something went wrong
+                    //GrowlCall("עדכון לא הצליח",'danger')
+                    console.log("no")
+                } else {
+                    console.log("yes")
+                }
+            }
+        })
+    console.log(email)
+})
+//handles the edit button for the Sixth q score
+$("#Sixth_btn").click(function () {
+    let email = $('#email')[0].value
+    let score = $('#quantity6')[0].value
+    let question = "SixthQuestion"
+    let place = 0
+    let test_name = $('#test_num')[0].value
+    const token = $('input[name="csrfmiddlewaretoken"]').attr('value')
+        $.post({
+            url: "edit_score",
+            data: {"email": email, "score": score, "question": question, "place": place, "test": test_name},
+            headers: {
+            "X-CSRFToken": token
+            },
+            success: function (result) {
+                if (result === "False") {  //If something went wrong
+                    //GrowlCall("עדכון לא הצליח",'danger')
+                    console.log("no")
+                } else {
+                    console.log("yes")
+                }
+            }
+        })
+    console.log(email)
+})
+//handles the edit button for the Ninth q score
+$("#Nine_btn").click(function () {
+    let email = $('#email')[0].value
+    let score = $('#quantity9')[0].value
+    let question = "NineQuestion"
+    let place = 0
+    let test_name = $('#test_num')[0].value
+    const token = $('input[name="csrfmiddlewaretoken"]').attr('value')
+        $.post({
+            url: "edit_score",
+            data: {"email": email, "score": score, "question": question, "place": place, "test": test_name},
+            headers: {
+            "X-CSRFToken": token
+            },
+            success: function (result) {
+                if (result === "False") {  //If something went wrong
+                    //GrowlCall("עדכון לא הצליח",'danger')
+                    console.log("no")
+                } else {
+                    console.log("yes")
+                }
+            }
+        })
+    console.log(email)
+})
+//handles the edit button for the Tenth q score
+$("#Tenth_btn").click(function () {
+    let email = $('#email')[0].value
+    let score = $('#quantity10')[0].value
+    let question = "TenthQuestion"
+    let place = 0
+    let test_name = $('#test_num')[0].value
+    const token = $('input[name="csrfmiddlewaretoken"]').attr('value')
+        $.post({
+            url: "edit_score",
+            data: {"email": email, "score": score, "question": question, "place": place, "test": test_name},
+            headers: {
+            "X-CSRFToken": token
+            },
+            success: function (result) {
+                if (result === "False") {  //If something went wrong
+                    //GrowlCall("עדכון לא הצליח",'danger')
+                    console.log("no")
+                } else {
+                    console.log("yes")
+                }
+            }
+        })
+    console.log(email)
+})
+
+----------------------------------------
+//// When click 'ערוך' in the medicine table, able/disable the edit functionallity
+//function handleAttrs(e) {
+//    row = e.closest('tr') // finds closest <tr> element - row that contains the btn we clicked
+//    row.find('.row-data , .row-time-data, .add_time_btn').each(function () { // in this row find classes ... (inputs)
+//        $(this).attr('disabled') ? $(this).prop('disabled', false) : $(this).prop('disabled', true)
+//        if ($(this).hasClass('row-time-data')){
+//            $(this)[0].value === "00:00" || $(this)[0].value === '' ? $(this).remove() : null; // removing uninitalize time input
+//        }
+//    })
+//    save_updates = row.find('.save_row_btn')
+//    delete_btn = row.find('.delete_row_btn')
+//    save_updates.attr('hidden') ? save_updates.prop('hidden', false) : save_updates.prop('hidden', true)
+//    delete_btn.attr('hidden') ? delete_btn.prop('hidden', false) : delete_btn.prop('hidden', true)
+//
+//}
+//// Handling edits of existing medicines of a patient
+//$('table').on('click', '.edit_row_btn', function () {
+//    handleAttrs($(this))
+//})
+
+// Handling saving of new/exist medicine of a patient
+//$('table').on('click', '.save_row_btn', function () {
+//    handleSaveEdits($(this))
+//})
+
+// Handling clicking on the add time button, adding new time input
+//$('table').on('click', '.add_time_btn', function () {
+//    cell = $(this).closest('td')
+//    newInput = $('<input required class="row-time-data" type="time" onkeydown="return false">')
+//    setTimepickerOptions(newInput)
+//    cell.append(newInput).append(" ")
+//
+//})
+
+//// When clicking 'מחק', deleting the medicine from the patient
+//function delete_data(e) {
+//    med_key = e.data('medicine-key')
+//    if (med_key === '') {
+//        row.fadeOut(1000, function () {
+//            row.remove();
+//        });
+//    } else {
+//        row = e.closest('tr')
+//        const token = $('input[name="csrfmiddlewaretoken"]').attr('value');
+//        $.post({
+//            url: "/patient_detail/med_delete",
+//            data: {data: med_key},
+//            headers: {
+//                "X-CSRFToken": token
+//            },
+//            success: function (result) {
+//                if (result === "False") {  //If something went wrong
+//                    GrowlCall("עדכון לא הצליח",'danger')
+//                } else {
+//                    row.fadeOut(1000, function () {
+//                        row.remove();
+//                    });
+//                }
+//            }
+//        })
+//    }
+//}
+
+//// Handling click on 'מחק' button
+//$('table').on('click', '.delete_row_btn', function () {
+//    row = $(this).closest('tr')
+//    edit_btn = row.find('.edit_row_btn')
+//    submit_deletion = row.find('.submit_delete_row_btn')
+//
+//    $(this).toggleClass('delete')
+//    $(this).hasClass('delete') ? $(this).text('חזור') : $(this).text('מחק')
+//    submit_deletion.attr('hidden') ? submit_deletion.prop('hidden', false) : submit_deletion.prop('hidden', true)
+//    edit_btn.attr('hidden') ? edit_btn.prop('hidden', false) : edit_btn.prop('hidden', true)
+//    submit_deletion.click(function () {
+//        delete_data($(this))
+//    })
+//})
+//// Makes the tooltips to be always shown
+//Chart.pluginService.register({
+//    beforeRender: function (chart) {
+//        if (chart.config.options.showAllTooltips) {
+//            chart.pluginTooltips = [];
+//            chart.config.data.datasets.forEach(function (dataset, i) {
+//                if (i == 1) { // only Medications tooltips
+//                    chart.getDatasetMeta(i).data.forEach(function (sector, j) {
+//                        chart.pluginTooltips.push(new Chart.Tooltip({
+//                            _chart: chart.chart,
+//                            _chartInstance: chart,
+//                            _data: chart.data,
+//                            _options: chart.options.tooltips,
+//                            _active: [sector]
+//                        }, chart));
+//                    });
+//                }
+//            });
+//            chart.options.tooltips.enabled = false;
+//            chart.options.tooltips.displayColors = false;
+//        }
+//    },
+//    afterDraw: function (chart, easing) {
+//        if (chart.config.options.showAllTooltips) {
+//            chart.options.tooltips.enabled = true;
+//            Chart.helpers.each(chart.pluginTooltips, function (tooltip) {
+//                tooltip.initialize();
+//                tooltip.update();
+//                tooltip.pivot();
+//                tooltip.transition(easing).draw();
+//            });
+//            chart.options.tooltips.enabled = false;
+//        }
+//    }
+//});
+//typeOf(value) {
+//  return typeof value;
+//};
+//// Init the timepicker for the medicine hours to be from 00:00 to 23:00 with jumps of 30 minutes
+//function setTimepickerOptions(e) {
+//    e.timepicker({
+//        'timeFormat': 'H:i',
+//        'minTime': '00:00am',
+//        'maxTime': '23:30am',
+//        'step': 30,
+//        'lang': {
+//            mins: 'min',
+//            hrs: 'hr'
+//        }
+//    })
+//}
+//                    e.data("medicine-key", medicine_id) // updating the data-medicine-key to the new medcine key
+//                    row.find('.edit_row_btn, .delete_row_btn, .submit_delete_row_btn').data("medicine-key", medicine_id)
+//                    handleAttrs(e)
+//                    $('<input type="submit">').hide().appendTo(form).click().remove()
+------------------------------------------

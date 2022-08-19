@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+<html dir="rtl">
+<head>
+    <title>{% block title %}קבע מבחן חדש{% endblock %}</title>
+    {% block head %}
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"-->
+<!--          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'registration/style.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-growl/1.0.0/jquery.bootstrap-growl.js"
+            integrity="sha512-4fpPq5LCcSAofCKmaM58RSbjpVRUqjx8nKAaBQVFay4MRo7FLafbt6bUNUfUbTZcSMzRNxZuVj3shwHA6ZeiOQ=="
+            crossorigin="anonymous"></script>
+    {% endblock %}
+</head>
+
+<body>
+{% block content %}
+<div class="registration-page">
+    <div class="form">
+        <form method="POST" class="form-group" dir="rtl" lang="he" style="text-align:right;">
+            <h1>קבע מבחן</h1>
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg">
+                    <p><span>  שם : </span> {{patient_details.first_name}}
+                        {{patient_details.last_name}}</p>
+                </div>
+            </div>
+            {{form|crispy}}
+            {{ourform|crispy}}
+            <button id="create_new_test_btn" type="button" class="btn btn-success">קבע</button>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    $("#id_email, #id_password1").on("blur", function () {
+        $(this).css('box-shadow', "");
+    })
+
+    $("#create_new_test_btn").click(function () {
+        const email = $("#id_email")[0].value;
+        const token = $('input[name="csrfmiddlewaretoken"]').attr('value');
+        console.log()
+        $.post({
+            url: "patient_detail/make_new_test",
+            data: {
+                email: email,
+            },
+            headers: {
+                "X-CSRFToken": token
+            },
+            success: function (result) {
+                if (result === "Valid") {  //If something went wrong
+                    $('<input type="submit">').hide().appendTo($('form')).click().remove();
+                } else if (result === "EmailExists") {
+                    GrowlCall("המשתמש כבר קיים", 'danger')
+                    $("#id_email").focus().css("box-shadow", "0 0 0 0.25rem rgb(255 0 0 / 25%)");
+                } else if (result === "FillEmail") {
+                    $("#id_email").focus().css("box-shadow", "0 0 0 0.25rem rgb(255 0 0 / 25%)");
+                }
+            }
+        })
+    })
+
+
+    $(function () {
+        const dtToday = new Date();
+
+        let month = dtToday.getMonth() + 1;
+        let day = dtToday.getDate();
+        let year = dtToday.getFullYear();
+        if (month < 10)
+            month = '0' + month.toString();
+        if (day < 10)
+            day = '0' + day.toString();
+
+        let maxDate = year + '-' + month + '-' + day;
+        $('#id_date_of_birth').attr('max', maxDate);
+    });
+
+    function GrowlCall(msg, type) {
+        console.log("test")
+        $(".bootstrap-growl").remove();
+        $.bootstrapGrowl(msg, {
+            ele: 'nav',
+            type: type,
+            offset: {from: 'top', amount: 20},
+            align: 'center',
+            width: 'auto',
+            delay: 2000,
+            allow_dismiss: false,
+        });
+    }
+</script>
+{% endblock %}
+{% block footer_scripts %}
+{% endblock footer_scripts %}
+</body>
+</html>

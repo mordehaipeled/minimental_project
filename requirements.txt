@@ -1,0 +1,20 @@
+django>=4.0.3
+django_rest_framework
+django-cors-headers==3.11.0
+django-dotenv
+firebase_auth==3.13.1
+requests wge
+opencv-python~=4.6.0.66
+pillow~=9.1.1
+Pyrebase~=3.0.27
+pyasn1~=0.4.8
+python-dotenv~=0.19.2
+requests~=2.27.1
+numpy~=1.22.4
+matplotlib~=3.5.2
+djangorestframework~=3.13.1
+DateTime~=4.4
+dashboard
+django-crispy-forms
+firebase-admin
+django-translation-manager

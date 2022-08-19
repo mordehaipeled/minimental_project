@@ -1,0 +1,142 @@
+/* remember to connect your html files if you want this code to run on them */
+
+body {
+    background: #dedede;
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+}
+
+.nav-item {
+    padding-left: 30px;
+    padding-right: 30px;
+    font-size: 16px;
+    border-left: 1px solid silver;
+    border-right: 1px solid silver;
+}
+
+.nav-item span {
+    color: #dedede;
+}
+
+.nav-item:hover {
+    background: #24417B;
+}
+
+.btn-blue {
+    color: #fdfdfd;
+    background: rgba(36, 65, 123, 0.9);
+}
+
+.btn-blue:hover {
+    color: #fdfdfd;
+    background: rgba(36, 65, 123, 1);
+}
+
+.container-fluid img{
+    margin-right: 10px;
+}
+
+.col-lg span, .q_title {
+    font-weight: bold;
+}
+
+.card-header {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.form-control{
+    border-color: black;
+}
+#do_legend {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+#do_legend li {
+    display: inline-table;
+}
+
+.legend-container {
+    display: inline-block;
+    padding: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+}
+
+#chart {
+    position: relative;
+    height: 60vh;
+    width: 60vh;
+    top: 15%;
+    margin: auto;
+}
+
+.li-container {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    color: black;
+    display: inline-block;
+}
+
+.triangle-up {
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid red;
+    z-index: 1;
+}
+
+
+.cross {
+    background: #000000;
+    margin-top: 10px;
+    height: 18px;
+    position: absolute;
+    width: 4px;
+    margin-right: -5px;
+}
+
+.cross:after {
+    background: #000000;
+    content: "";
+    height: 4px;
+    left: -7px;
+    position: absolute;
+    top: 7px;
+    width: 18px;
+}
+
+.circle {
+    background-color: blue;
+    margin-top: 10px;
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.square {
+  width: 15px;
+  height: 15px;
+  background: rgb(231, 161, 0);
+}
+/* any img with the class set to thumbnail will become bigger on mouse hover */
+.thumbnail {
+top:-50px;
+left:-35px;
+display:block;
+z-index:999;
+cursor: pointer;
+-webkit-transition-property: all;
+-webkit-transition-duration: 0.3s;
+-webkit-transition-timing-function: ease;
+}
+
+/*change the number below to scale to the appropriate size*/
+.thumbnail:hover {
+transform: scale(2.5);
+
+}

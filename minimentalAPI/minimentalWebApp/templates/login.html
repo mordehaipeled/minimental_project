@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+{% load i18n %}
+<header>
+<title>{% trans "Login" %}</title>
+
+<head></head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/0.8.2/css/flag-icon.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>`
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/js/bootstrap-select.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script>
+        var dict = {   "hello": {
+              en: "Hello",
+              he: "שלום"},
+                       "languages": {
+              en: "Languages",
+              he: "שפות"   },
+                       "Login": {
+              en: "Login",
+              he: "התחברות"},
+                        "Email": {
+              en: "Email",
+              he: "מייל"},
+                        "NewUser": {
+              en: "New User?, ask an existing member to add you." ,
+              he: "משתמש חדש? בקש ממשתמש קיים להוסיף אותך" },
+                       "log-in": {
+              en: "login",
+              he: "התחבר"} }
+       </script>
+    <link rel="stylesheet" type="text/css" href="{% static 'sign_in/style.css' %}">
+
+</header>
+
+<body>
+
+<div class="login-page">
+    <div class="form">
+        <form method="POST" class="form-group" style="text-align: right" dir="rtl">
+            <h1 class='translate' id="Login">Login</h1>
+            {% csrf_token %}
+            {% blocktrans %}
+            {{form}}
+            {% endblocktrans %}
+            <button type="submit" class="translate" id="log-in">{% trans "log-in" %}</button>
+            <h class="translate" id="NewUser">{% trans "New User?, ask an existing member to add you.?" %} </h>
+                <div class="content">
+                    <select class="selectpicker" data-width="100%">
+                        <option data-content='<span class="flag-icon flag-icon-us"></span> English '>English</option>
+                        <option data-content='<span class="flag-icon flag-icon-il"></span> עברית '> עברית </option>
+                    </select>
+
+                </div>
+            <h2>{% blocktrans %} {{ msg }} {% endblocktrans %}</h2>
+        </form>
+    </div>
+</div>
+<script>
+  $(function(){
+       $('.selectpicker').selectpicker();
+    });
+
+    $(document).on("change",".selectpicker", function(){
+      var totranslate = [];
+      var all = $(".translate").map(function() {
+        totranslate.push(this.id);
+        return this.innerHTML;
+      }).get();
+      console.log('content',all.join());
+      console.log('ids',totranslate);
+
+      console.log('degel',$(this).val());
+      if ($(this).val() == 'עברית') {
+        $('.content').css('direction','rtl')
+        console.log('id',$('.translate').attr('id'));
+        $.each(totranslate, function(key,val) {
+            console.log('val:',val)
+            $('#'+val).text(dict[val]['he']);
+        });
+        $('#'+$('.translate').attr('id')).text(dict[$('.translate').attr('id')]['he']);
+      } else {
+        $('.content').css('direction','ltr')
+        $.each(totranslate, function(key,val) {
+            console.log('val:',val)
+            $('#'+val).text(dict[val]['en']);
+        });
+      }
+    });
+
+</script>
+</body>
+</html>
